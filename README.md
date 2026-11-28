@@ -241,6 +241,38 @@ repository's files only to a request with a token, and shields.io sends none. A
 run with no region counted, or a token that cannot push, warns and leaves the
 last badge in place. On a pull request the step does nothing.
 
+### Linking a coverage page
+
+`coverage-page: 'true'` writes `variance coverage --packages --fan-in --format
+html`, the repository's coverage over every suite against the mainline's
+share rather than the change the comment reviews, and uploads it unzipped as the
+artifact `variance-coverage-<suite>.html`, named for the review's `suite`.
+The comment and the step summary link it. The
+page holds every package with its files, the test files that cover each file by
+kind, and every directory no suite loads. It fetches nothing, so it opens from
+the link as it is. A page that cannot be drawn or uploaded leaves the comment
+to post without the link.
+
+An artifact's link names its run, so with `badge: 'true'` a push to your default
+branch also keeps the page where its address stays the same: `coverage.html`,
+the one file of a commit with no parent at `refs/coverage/<branch>`, pushed with
+the badge and replaced on each push the way the badge is. With `comment:
+'false'` the page is handed on with the review, and the job with `from` keeps
+it. A token that cannot push,
+or a branch that has moved past the run's commit, warns and leaves the last page
+in place.
+raw.githubusercontent.com serves the file as plain text, so a browser shows its
+source: read it with `git fetch origin refs/coverage/<branch>`, or serve it as
+HTML from a site of your own.
+
+```yaml
+- uses: Variance-Authority/action/review@v1
+  with:
+    suite: unit
+    test: npx jest
+    coverage-page: 'true'
+```
+
 ## Sharding a visual review
 
 `shard: k/n` runs one slice of the suite. A slice is not the suite, so each
